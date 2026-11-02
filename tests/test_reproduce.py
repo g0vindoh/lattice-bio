@@ -23,3 +23,4 @@ def test_run_figures_execution():
     assert os.path.exists("figures/paper_fig6_kinematics_shares.png")
     assert os.path.exists("figures/paper_fig7_robustness_matrix.png")
     assert os.path.exists("figures/paper_fig8_scaling.png")
+

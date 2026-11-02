@@ -362,3 +362,4 @@ All 7 required analytical benchmarks passed with machine-precision accuracy ($< 
 | **5. Portal Frame Symmetry** | $\|u_{\text{left}}\| - \|u_{\text{right}}\| = 0$ | $0.0\text{ m}$ | $4.85 \times 10^{-12}\text{ m}$ | $4.85 \times 10^{-12}$ | $1.0 \times 10^{-6}$ | **PASS** |
 | **6. Mesh Refinement Invariance** | $N_{\text{elements}} = 1 \to 32$ | $-0.03214286\text{ m}$ | $-0.03214286\text{ m}$ | $3.10 \times 10^{-11}$ | $1.0 \times 10^{-6}$ | **PASS** |
 | **7. Equilibrium Reactions** | $\sum \mathbf{R} + \sum \mathbf{F} = \mathbf{0}$ | $\mathbf{0}$ | $4.04 \times 10^{-14}\text{ N}$ | $4.04 \times 10^{-14}$ | $1.0 \times 10^{-6}$ | **PASS** |
+
