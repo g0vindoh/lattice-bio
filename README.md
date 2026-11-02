@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Reproducibility](https://img.shields.io/badge/Reproducibility-100%25%20Deterministic-orange.svg)](reproduce_all.py)
 [![3D-Printable](https://img.shields.io/badge/CAD-3D%20Printable%20STL-purple.svg)](stl/)
+[![Live Demo](https://img.shields.io/badge/Demo-Interactive%20Web%20App-teal.svg)](https://g0vindoh.github.io/lattice-bio/)
 
 > **Research Paper:** *"Bone Remodeling vs Evolution: A Controlled Comparison of Bio-Inspired Pruning and Genetic Algorithms for Lightweight 2D Lattice Design."*
 
@@ -245,7 +246,11 @@ The repository includes a standalone static web application located in `demo/`. 
 - **Animated Load Test:** Toggle displacement magnification with members colored dynamically by strain energy, axial stress, or thickness.
 - **Benchmark Scoreboard:** Real-time metrics comparing compliance, stiffness, mass, and energy partition directly against Honeycomb and Voronoi baselines.
 
-Launch locally with:
+### Live Hosted Web Demo
+Access the live, zero-installation interactive demonstration on GitHub Pages:  
+👉 **[https://g0vindoh.github.io/lattice-bio/](https://g0vindoh.github.io/lattice-bio/)**
+
+Or launch locally with:
 ```bash
 python reproduce_all.py --serve-demo
 ```
