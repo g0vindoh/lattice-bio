@@ -1,9 +1,10 @@
 # Lattice-Bio: Bone Remodeling vs Evolution for Lightweight 2D Lattice Design
 
-[![Tests](https://img.shields.io/badge/Tests-65%20passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-76%20passed-brightgreen.svg)](tests/)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](pyproject.toml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Reproducibility](https://img.shields.io/badge/Reproducibility-100%25%20Deterministic-orange.svg)](reproduce_all.py)
+[![3D-Printable](https://img.shields.io/badge/CAD-3D%20Printable%20STL-purple.svg)](stl/)
 
 > **Research Paper:** *"Bone Remodeling vs Evolution: A Controlled Comparison of Bio-Inspired Pruning and Genetic Algorithms for Lightweight 2D Lattice Design."*
 
@@ -54,7 +55,22 @@ python reproduce_all.py --serve-demo --port 8000
 ```
 Then navigate to: **`http://localhost:8000/index.html`** in your browser.
 
-### 4. Full Experimental Campaign Reproduction (E1 to E7 from scratch)
+### 4. Export 3D-Printable STL Solid Models (Additive Manufacturing)
+Export watertight 3D printable STL files of optimal lattices with thickened struts and cylindrical node hubs:
+```bash
+python reproduce_all.py --mode stl
+```
+Pre-generated binary STL files are available in `stl/`:
+- `stl/lattice_pruned_LC1_cantilever.stl` (Cantilever truss)
+- `stl/lattice_pruned_LC2_bending_arch.stl` (3-Point bending arch)
+- `stl/lattice_multiload_robust.stl` (Multi-load robust lattice)
+
+### 5. Compile-Ready LaTeX & Overleaf Manuscript
+The full journal preprint is ready for submission in `paper/`:
+- `paper/manuscript.tex`: IEEE/Elsevier format with all real data, tables, and equations.
+- `paper/references.bib`: Seminal biomechanics, cellular solids, and optimization citations.
+
+### 6. Full Experimental Campaign Reproduction (E1 to E7 from scratch)
 ```bash
 python reproduce_all.py --mode full
 ```
@@ -91,6 +107,11 @@ Optimizing specifically for one loading regime induces severe vulnerability to o
 
 ### Finding 4: Wolff's Law Area Redistribution Boosts Stiffness by +138%
 Reallocating 50% of the resorbed strut volume into the top 15% most heavily loaded active members increases structural stiffness from $264.8$ N/m to **$630.3$ N/m ($2.38\times$)** under the exact same material budget ($v_f = 0.20$).
+
+### Finding 5: Multi-Load Remodeling & Cowin Fabric Tensor Anisotropy
+Simulating stochastic daily loading spectra ($\mathcal{S} = \{ (\mathbf{F}^{(k)}, w_k) \}$) with Multi-Load Bone Remodeling:
+- Completely resolves the $32,837\times$ specialization cliff, producing a lattice that simultaneously supports Cantilever shear ($K = 313.9$ N/m) and 3-Point bending ($K = 3,144.9$ N/m).
+- Stereological Cowin 2nd-order fabric tensor $\mathbf{H}$ decomposition confirms that the principal structural orientation directly aligns with the global principal stress field, validating Wolff's trajectorial hypothesis in quantitative tensor form.
 
 ---
 

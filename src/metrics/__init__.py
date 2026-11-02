@@ -21,6 +21,16 @@ from .statistics import (
     mann_whitney_u_test,
     apply_holm_bonferroni_correction,
 )
+from .buckling import (
+    BucklingAnalysisResult,
+    compute_euler_buckling_load,
+    evaluate_lattice_buckling,
+)
+from .fabric_tensor import (
+    FabricTensorResult,
+    compute_lattice_fabric_tensor,
+    compute_wolff_alignment_metric,
+)
 
 __all__ = [
     "SlendernessWarning",
@@ -38,4 +48,10 @@ __all__ = [
     "compute_distribution_summary",
     "mann_whitney_u_test",
     "apply_holm_bonferroni_correction",
+    "BucklingAnalysisResult",
+    "compute_euler_buckling_load",
+    "evaluate_lattice_buckling",
+    "FabricTensorResult",
+    "compute_lattice_fabric_tensor",
+    "compute_wolff_alignment_metric",
 ]

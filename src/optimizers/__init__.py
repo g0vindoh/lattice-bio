@@ -7,6 +7,7 @@ from .base import (
 )
 from .pruning import RemodelingPruningOptimizer
 from .ga import GeneticAlgorithmOptimizer
+from .multi_load import MultiLoadRemodelingOptimizer
 
 __all__ = [
     "OptimizationStep",
@@ -14,4 +15,5 @@ __all__ = [
     "BaseOptimizer",
     "RemodelingPruningOptimizer",
     "GeneticAlgorithmOptimizer",
+    "MultiLoadRemodelingOptimizer",
 ]

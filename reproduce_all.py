@@ -73,6 +73,16 @@ def run_figures() -> None:
     print(f"[SUCCESS] All 8 publication figures regenerated in figures/ ({dt:.2f} s).")
 
 
+def run_stl_export() -> None:
+    """Generate 3D-printable watertight STL solid models."""
+    print("\n[STEP] Generating 3D-printable STL solid models for additive manufacturing...")
+    t0 = time.time()
+    from export_stl_models import export_all_paper_stl_models
+    export_all_paper_stl_models()
+    dt = time.time() - t0
+    print(f"[SUCCESS] 3D printable STL models exported to stl/ ({dt:.2f} s).")
+
+
 def run_quick_verification() -> None:
     """Run fast analytical validation and smoke test."""
     print("\n[STEP 1/3] Running Phase 1 Analytical FE Validation Suite...")
@@ -123,9 +133,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Master Reproduction CLI for Lattice-Bio Research")
     parser.add_argument(
         "--mode",
-        choices=["figures", "quick", "full"],
+        choices=["figures", "quick", "full", "stl"],
         default="figures",
-        help="Reproduction mode: 'figures' (fast plot rebuild), 'quick' (analytical smoke test), 'full' (all E1-E7 experiments)",
+        help="Reproduction mode: 'figures' (fast plot rebuild), 'quick' (analytical smoke test), 'full' (all E1-E7 experiments), 'stl' (3D-printable CAD models)",
     )
     parser.add_argument("--test", action="store_true", help="Run full pytest test suite")
     parser.add_argument("--serve-demo", action="store_true", help="Launch local HTTP server for demo")
@@ -151,6 +161,8 @@ def main() -> None:
         run_quick_verification()
     elif args.mode == "full":
         run_full_campaign(config_path=args.config)
+    elif args.mode == "stl":
+        run_stl_export()
 
 
 if __name__ == "__main__":

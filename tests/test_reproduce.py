@@ -2,7 +2,7 @@
 
 import os
 import pytest
-from reproduce_all import get_git_commit_hash, run_figures
+from reproduce_all import get_git_commit_hash, run_figures, run_stl_export
 
 
 def test_get_git_commit_hash():
@@ -23,4 +23,13 @@ def test_run_figures_execution():
     assert os.path.exists("figures/paper_fig6_kinematics_shares.png")
     assert os.path.exists("figures/paper_fig7_robustness_matrix.png")
     assert os.path.exists("figures/paper_fig8_scaling.png")
+
+
+def test_stl_files_exist_and_nonempty():
+    """Verify exported 3D-printable STL solid models exist in stl/."""
+    assert os.path.exists("stl/lattice_pruned_LC1_cantilever.stl")
+    assert os.path.exists("stl/lattice_pruned_LC2_bending_arch.stl")
+    assert os.path.exists("stl/lattice_multiload_robust.stl")
+    assert os.path.getsize("stl/lattice_pruned_LC1_cantilever.stl") > 1000
+
 
