@@ -1,0 +1,28 @@
+Baseline,Load Case,Target VF,Compliance (J),Stiffness (N/m),Specific Stiffness (1/(J*kg)),Axial Energy Share (%),Bending Energy Share (%),Feasible,Min Slenderness L/t,Slenderness Warnings
+Ground Structure (Uniform),LC1,0.2,6.4466e-03,1.5512e+02,3.2934e-02,99.9%,0.1%,YES,26.2,0
+Honeycomb (Regular Hex),LC1,0.2,4.6819e-01,2.1359e+00,4.5348e-04,2.0%,98.0%,YES,3.9,56
+Voronoi (20 Seeds: Median [IQR]),LC1,0.2,4.1799e-02 [2.88e-02],2.3928e+01,5.0803e-03 [3.32e-03],15.8%,84.2%,YES,0.5,1511 across 20 seeds
+Ground Structure (Uniform),LC1,0.3,4.2717e-03,2.3410e+02,3.3135e-02,99.9%,0.1%,YES,17.4,0
+Honeycomb (Regular Hex),LC1,0.3,1.4045e-01,7.1200e+00,1.0078e-03,4.2%,95.8%,YES,2.6,56
+Voronoi (20 Seeds: Median [IQR]),LC1,0.3,1.4272e-02 [9.06e-03],7.0076e+01,9.9188e-03 [5.65e-03],28.4%,71.6%,YES,0.3,2095 across 20 seeds
+Ground Structure (Uniform),LC1,0.4,3.1921e-03,3.1327e+02,3.3256e-02,99.8%,0.2%,YES,13.0,0
+Honeycomb (Regular Hex),LC1,0.4,6.0816e-02,1.6443e+01,1.7456e-03,7.0%,93.0%,YES,1.9,56
+Voronoi (20 Seeds: Median [IQR]),LC1,0.4,7.2453e-03 [4.33e-03],1.3803e+02,1.4653e-02 [7.97e-03],39.5%,60.5%,YES,0.2,2269 across 20 seeds
+Ground Structure (Uniform),LC2,0.2,5.5185e-04,1.8121e+03,3.8473e-01,99.9%,0.1%,YES,27.2,0
+Honeycomb (Regular Hex),LC2,0.2,1.0280e+00,9.7274e-01,2.0653e-04,0.1%,99.9%,YES,4.0,57
+Voronoi (20 Seeds: Median [IQR]),LC2,0.2,5.4105e-02 [1.99e-01],2.0015e+01,4.2495e-03 [8.75e-03],1.1%,98.9%,YES,0.5,1442 across 20 seeds
+Ground Structure (Uniform),LC2,0.3,3.7923e-04,2.6369e+03,3.7323e-01,99.8%,0.2%,YES,17.8,0
+Honeycomb (Regular Hex),LC2,0.3,1.0250e+00,9.7557e-01,1.3808e-04,0.1%,99.9%,YES,2.6,57
+Voronoi (20 Seeds: Median [IQR]),LC2,0.3,4.8557e-02 [1.88e-01],2.3547e+01,3.3329e-03 [7.19e-03],0.8%,99.2%,YES,0.3,2081 across 20 seeds
+Ground Structure (Uniform),LC2,0.4,2.8915e-04,3.4585e+03,3.6714e-01,99.7%,0.3%,YES,13.2,0
+Honeycomb (Regular Hex),LC2,0.4,1.0241e+00,9.7647e-01,1.0366e-04,0.1%,99.9%,YES,1.9,57
+Voronoi (20 Seeds: Median [IQR]),LC2,0.4,4.7201e-02 [1.88e-01],2.4665e+01,2.6184e-03 [5.68e-03],0.6%,99.4%,YES,0.2,2274 across 20 seeds
+Ground Structure (Uniform),LC3,0.2,2.6380e-05,3.7908e+04,8.0483e+00,100.0%,0.0%,YES,27.2,0
+Honeycomb (Regular Hex),LC3,0.2,7.7281e-02,1.2940e+01,2.7473e-03,0.0%,100.0%,YES,4.0,57
+Voronoi (20 Seeds: Median [IQR]),LC3,0.2,9.7947e-05 [6.54e-05],1.0211e+04,2.1679e+00 [1.21e+00],28.6%,71.4%,YES,0.5,1438 across 20 seeds
+Ground Structure (Uniform),LC3,0.3,1.7314e-05,5.7756e+04,8.1750e+00,99.9%,0.1%,YES,17.8,0
+Honeycomb (Regular Hex),LC3,0.3,7.7169e-02,1.2959e+01,1.8342e-03,0.0%,100.0%,YES,2.6,57
+Voronoi (20 Seeds: Median [IQR]),LC3,0.3,3.8051e-05 [1.93e-05],2.6281e+04,3.7198e+00 [1.63e+00],46.4%,53.6%,YES,0.3,2077 across 20 seeds
+Ground Structure (Uniform),LC3,0.4,1.2880e-05,7.7642e+04,8.2423e+00,99.8%,0.2%,YES,13.2,0
+Honeycomb (Regular Hex),LC3,0.4,7.7138e-02,1.2964e+01,1.3762e-03,0.0%,100.0%,YES,2.0,57
+Voronoi (20 Seeds: Median [IQR]),LC3,0.4,2.1498e-05 [8.50e-06],4.6522e+04,4.9386e+00 [1.75e+00],58.4%,41.6%,YES,0.2,2270 across 20 seeds

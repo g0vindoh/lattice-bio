@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bone Remodeling vs Evolution: Lightweight 2D Lattice Benchmark</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="title-group">
+          <span class="badge">Research Benchmark Demo</span>
+          <h1>Bone Remodeling vs Evolution</h1>
+          <p class="subtitle">A Controlled Comparison of Bio-Inspired Pruning and Genetic Algorithms for Lightweight 2D Lattice Design</p>
+        </div>
+        <div class="meta-badges">
+          <span class="tag">Euler-Bernoulli Frame FEM</span>
+          <span class="tag">Exact Volume Match</span>
+          <span class="tag">100% Deterministic & Seeded</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Global Controls Toolbar -->
+    <section class="toolbar-section">
+      <div class="control-row">
+        <!-- Load Case Selection -->
+        <div class="control-group">
+          <label for="loadCaseSelect">Load Case:</label>
+          <select id="loadCaseSelect">
+            <option value="LC1">LC1: Cantilever (Right Mid-Height Tip Shear)</option>
+            <option value="LC2">LC2: Simply Supported (Top Central Load)</option>
+            <option value="LC3">LC3: Compression Block (Distributed Downward)</option>
+          </select>
+        </div>
+
+        <!-- Volume Fraction Selection -->
+        <div class="control-group">
+          <label for="vfSelect">Target Volume Budget (v<sub>f</sub>):</label>
+          <select id="vfSelect">
+            <option value="0.2">v_f = 0.20 (80% Porous)</option>
+            <option value="0.3">v_f = 0.30 (70% Porous)</option>
+            <option value="0.4">v_f = 0.40 (60% Porous)</option>
+          </select>
+        </div>
+
+        <!-- Color Map Mode -->
+        <div class="control-group">
+          <label for="colorModeSelect">Color Members By:</label>
+          <select id="colorModeSelect">
+            <option value="energy">Strain Energy Density (U_i)</option>
+            <option value="stress">Peak Normal Stress (σ_max)</option>
+            <option value="thickness">Cross-Section Thickness (t)</option>
+          </select>
+        </div>
+
+        <!-- Load Test / Deformed View Toggle -->
+        <div class="control-group toggle-group">
+          <label class="switch-label">
+            <input type="checkbox" id="deformToggle">
+            <span class="slider"></span>
+            <span class="label-text">Apply Load Test (Deformed)</span>
+          </label>
+        </div>
+
+        <!-- Deformation Scale Slider -->
+        <div class="control-group scale-group" id="scaleControlGroup">
+          <label for="defScaleSlider">Displacement Scale: <span id="scaleValue">100x</span></label>
+          <input type="range" id="defScaleSlider" min="1" max="500" value="100">
+        </div>
+      </div>
+
+      <!-- Playback Timeline Controls -->
+      <div class="timeline-row">
+        <div class="playback-buttons">
+          <button id="btnStepBack" title="Step Back (Previous Iteration)">&#9664;&#9664;</button>
+          <button id="btnPlayPause" class="btn-primary" title="Play / Pause Replay">&#9654; Play</button>
+          <button id="btnStepForward" title="Step Forward (Next Iteration)">&#9654;&#9654;</button>
+          <button id="btnReset" title="Reset to Initial State">&#8635; Reset</button>
+        </div>
+
+        <div class="scrubber-container">
+          <input type="range" id="timelineScrubber" min="0" max="100" value="100">
+          <div class="timeline-labels">
+            <span>Initial (Over-Connected)</span>
+            <span id="timelineProgressText">Converged State (100%)</span>
+          </div>
+        </div>
+
+        <div class="speed-control">
+          <label for="speedSelect">Speed:</label>
+          <select id="speedSelect">
+            <option value="1">1x</option>
+            <option value="2" selected>2x</option>
+            <option value="5">5x</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Dual Synchronized Viewport -->
+    <main class="viewports-grid">
+      <!-- Left Panel: Method A (Bio-Inspired Pruning) -->
+      <div class="viewport-card" id="cardMethodA">
+        <div class="card-header">
+          <div class="method-title">
+            <span class="indicator indicator-pruning"></span>
+            <h2>Method A: Bio-Inspired Remodeling Pruning</h2>
+          </div>
+          <div class="method-stats-badge" id="badgeA">
+            Iteration <span id="iterA">0</span> &bull; <span id="solvesA">0</span> FE Solves
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="canvasA" width="600" height="240"></canvas>
+          <div class="canvas-overlay" id="overlayA">
+            <div class="load-case-indicator" id="lcBadgeA">LC1 Cantilever</div>
+          </div>
+        </div>
+
+        <!-- Scoreboard A -->
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <span class="m-label">Compliance (C = F<sup>T</sup>u)</span>
+            <span class="m-val" id="compA">0.000 J</span>
+          </div>
+          <div class="metric-item">
+            <span class="m-label">Stiffness (K = 1/C)</span>
+            <span class="m-val" id="stiffA">0.00 N/m</span>
+          </div>
+          <div class="metric-item">
+            <span class="m-label">Active Struts</span>
+            <span class="m-val" id="membersA">0 / 208</span>
+          </div>
+          <div class="metric-item">
+            <span class="m-label">Volume Fraction (v<sub>f</sub>)</span>
+            <span class="m-val" id="vfA">0.000</span>
+          </div>
+        </div>
+
+        <!-- Kinematic Energy Bar A -->
+        <div class="energy-share-bar-container">
+          <div class="bar-label">
+            <span>Strain Energy Share:</span>
+            <span><strong id="axShareA">90%</strong> Axial &bull; <strong id="bendShareA">10%</strong> Bending</span>
+          </div>
+          <div class="progress-bar">
+            <div class="bar-axial" id="barAxialA" style="width: 90%;"></div>
+            <div class="bar-bending" id="barBendingA" style="width: 10%;"></div>
+          </div>
+          <div class="kinematic-tag" id="kinTagA">Stretch-Dominated</div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Method B (Genetic Algorithm) -->
+      <div class="viewport-card" id="cardMethodB">
+        <div class="card-header">
+          <div class="method-title">
+            <span class="indicator indicator-ga"></span>
+            <h2>Method B: Genetic Algorithm (Evolution)</h2>
+          </div>
+          <div class="method-stats-badge" id="badgeB">
+            Gen <span id="iterB">0</span> &bull; <span id="solvesB">0</span> FE Solves
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="canvasB" width="600" height="240"></canvas>
+          <div class="canvas-overlay" id="overlayB">
+            <div class="load-case-indicator" id="lcBadgeB">LC1 Cantilever</div>
+          </div>
+        </div>
+
+        <!-- Scoreboard B -->
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <span class="m-label">Compliance (C = F<sup>T</sup>u)</span>
+            <span class="m-val" id="compB">0.000 J</span>
+          </div>
+          <div class="metric-item">
+            <span class="m-label">Stiffness (K = 1/C)</span>
+            <span class="m-val" id="stiffB">0.00 N/m</span>
+          </div>
+          <div class="metric-item">
+            <span class="m-label">Active Struts</span>
+            <span class="m-val" id="membersB">0 / 208</span>
+          </div>
+          <div class="metric-item">
+            <span class="m-label">Volume Fraction (v<sub>f</sub>)</span>
+            <span class="m-val" id="vfB">0.000</span>
+          </div>
+        </div>
+
+        <!-- Kinematic Energy Bar B -->
+        <div class="energy-share-bar-container">
+          <div class="bar-label">
+            <span>Strain Energy Share:</span>
+            <span><strong id="axShareB">99%</strong> Axial &bull; <strong id="bendShareB">1%</strong> Bending</span>
+          </div>
+          <div class="progress-bar">
+            <div class="bar-axial" id="barAxialB" style="width: 99%;"></div>
+            <div class="bar-bending" id="barBendingB" style="width: 1%;"></div>
+          </div>
+          <div class="kinematic-tag" id="kinTagB">Stretch-Dominated</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Baseline Benchmark Comparison Panel -->
+    <section class="baselines-section">
+      <div class="section-header">
+        <h3>Final Benchmark Comparison (Under Equal Material Budget v<sub>f</sub>)</h3>
+        <p>Specific stiffness comparison of bio-inspired optimizers against standard cellular baselines.</p>
+      </div>
+
+      <div class="baseline-cards-row">
+        <!-- Pruning Card -->
+        <div class="b-card winner-card">
+          <div class="b-card-badge">Method A Winner</div>
+          <h4>Remodeling Pruning</h4>
+          <div class="b-stiff" id="baseStiffPruning">-- N/(m·kg)</div>
+          <div class="b-sub">~19 FE Solves &bull; Stretch-Dominated</div>
+          <div class="b-rel" id="baseRelPruning">Reference</div>
+        </div>
+
+        <!-- GA Card -->
+        <div class="b-card">
+          <h4>Genetic Algorithm</h4>
+          <div class="b-stiff" id="baseStiffGA">-- N/(m·kg)</div>
+          <div class="b-sub">900 FE Solves &bull; Discrete Sizing</div>
+          <div class="b-rel" id="baseRelGA">--% vs Pruning</div>
+        </div>
+
+        <!-- Uniform Ground Structure -->
+        <div class="b-card">
+          <h4>Uniform Ground Structure</h4>
+          <div class="b-stiff" id="baseStiffUGS">-- N/(m·kg)</div>
+          <div class="b-sub">Full Triangulated Grid &bull; Non-Optimized</div>
+          <div class="b-rel" id="baseRelUGS">--% vs Pruning</div>
+        </div>
+
+        <!-- Voronoi (Trabecular) -->
+        <div class="b-card">
+          <h4>Voronoi Lattice</h4>
+          <div class="b-stiff" id="baseStiffVor">-- N/(m·kg)</div>
+          <div class="b-sub">Trabecular-Like &bull; Bending-Dominated</div>
+          <div class="b-rel" id="baseRelVor">--% vs Pruning</div>
+        </div>
+
+        <!-- Regular Hexagonal Honeycomb -->
+        <div class="b-card">
+          <h4>Regular Hex Honeycomb</h4>
+          <div class="b-stiff" id="baseStiffHC">-- N/(m·kg)</div>
+          <div class="b-sub">Cellular Hexagons &bull; 99% Flexure</div>
+          <div class="b-rel" id="baseRelHC">--% vs Pruning</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Colorbar & Legend -->
+    <div class="colorbar-legend">
+      <span>Low Intensity (Resorption Stimulus)</span>
+      <div class="gradient-bar" id="gradientBar"></div>
+      <span>Peak Intensity (High Stress / Energy)</span>
+    </div>
+
+    <!-- Biological Mechanism Explainer -->
+    <footer class="app-footer">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Biological Trabecular Remodeling (Method A)</h4>
+          <p>Bone adapts to mechanical loads via cellular mechanotransduction (Wolff's Law). Osteoclasts resorb bone trabeculae experiencing low mechanical stimulus (strain energy density), while osteoblasts deposit bone along principal stress trajectories, converging to lightweight stretch-dominated topologies in very few iterations.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Darwinian Evolutionary Optimization (Method B)</h4>
+          <p>Genetic algorithms simulate biological evolution through population variation, crossover, and random point mutation over discrete gauge thicknesses. While capable of avoiding local minima, combinatorial evolution requires orders of magnitude more evaluations than remodeling-driven resorption.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Research Project &bull; Euler-Bernoulli Frame FE Formulation &bull; Reproducible Benchmark Suite</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

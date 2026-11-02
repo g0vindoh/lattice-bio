@@ -1,0 +1,106 @@
+# Phase 4 Experimental Campaign Configuration (E1 to E7)
+# 100% Config-Driven and Seeded Reproducibility
+
+seed: 42
+
+domain:
+  width: 3.0      # Domain width W (m, 3:1 aspect ratio)
+  height: 1.0     # Domain height H (m)
+  depth: 1.0      # Out-of-plane depth b (m)
+
+material:
+  E: 2.1e+11              # Young's modulus (Pa, 210 GPa)
+  density: 7850.0         # Density (kg/m^3)
+  yield_strength: 2.5e+08 # Yield strength (Pa, 250 MPa)
+  name: "StructuralSteel"
+
+pad_config:
+  thickness: 0.005              # Pad member thickness (m)
+  depth: 1.0                   # Pad out-of-plane depth (m)
+  attachment_tolerance: 1.0e-4  # Attachment distance tolerance (m)
+
+load_cases:
+  LC1:
+    name: "Cantilever (Right Mid-Height Tip Shear)"
+    type: "cantilever"
+    magnitude: 1000.0   # N
+  LC2:
+    name: "Simply Supported (Central Point Load Top Edge)"
+    type: "simply_supported"
+    magnitude: 1000.0   # N
+  LC3:
+    name: "Compression Block (Distributed Downward Load Top Edge)"
+    type: "compression_block"
+    magnitude: 1000.0   # N
+
+default_ground_structure:
+  nx: 13
+  ny: 5
+  radius: null
+
+# Experiment E1: Final Quality & Statistical Benchmark
+e1_final_quality:
+  volume_fractions: [0.2, 0.3, 0.4]
+  num_seeds_ga: 5        # 5 seeds for GA replication across 3 LCs and 3 VFs (n=5 for exact non-parametric tests)
+  num_seeds_voronoi: 5   # 5 seeds for Voronoi baseline
+  methods:
+    - "RemodelingPruning"
+    - "GeneticAlgorithm"
+    - "UniformGroundStructure"
+    - "Honeycomb"
+    - "Voronoi"
+
+# Experiment E2: Convergence Dynamics
+e2_convergence:
+  target_volume_fraction: 0.2
+  load_cases: ["LC1", "LC2", "LC3"]
+
+# Experiment E3: Pareto Fronts (Stiffness vs Mass)
+e3_pareto:
+  volume_fractions: [0.15, 0.20, 0.25, 0.30, 0.35, 0.40]
+  load_cases: ["LC1", "LC2", "LC3"]
+
+# Experiment E4: Robustness & Cross-Load Generalization
+e4_robustness:
+  target_volume_fraction: 0.2
+
+# Experiment E5: Stretch vs Bending Energy Shares
+e5_kinematics:
+  target_volume_fraction: 0.2
+
+# Experiment E6: Ablation Studies
+e6_ablations:
+  load_case: "LC1"
+  target_volume_fraction: 0.2
+  pruning_removal_rates: [0.02, 0.05, 0.10]
+  pruning_utilization_metrics: ["strain_energy_density", "axial_stress", "peak_stress"]
+  pruning_redistribute_area: [false, true]
+  ga_tournament_sizes: [2, 3, 5]
+  ga_mutation_rates: [0.01, 0.02, 0.05]
+
+# Experiment E7: Grid & Solver Scaling
+e7_scaling:
+  grid_sizes:
+    - [9, 3]
+    - [13, 5]
+    - [17, 7]
+    - [21, 9]
+  target_volume_fraction: 0.2
+  load_case: "LC1"
+
+pruning_defaults:
+  removal_rate: 0.05
+  utilization_metric: "strain_energy_density"
+  redistribute_area: false
+  initial_thickness: 0.025
+  max_iterations: 80
+
+ga_defaults:
+  pop_size: 30
+  generations: 30
+  crossover_rate: 0.8
+  mutation_rate: 0.02
+  tournament_size: 3
+  elite_count: 2
+  discrete_levels: [0.0, 0.004, 0.008, 0.012, 0.016, 0.020, 0.025, 0.030]
+

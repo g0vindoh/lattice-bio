@@ -1,0 +1,13 @@
+experiment,method,load_case,axial_energy_share,bending_energy_share,kinematic_class
+E5,RemodelingPruning,LC1,0.8930602451481451,0.10693975485185492,Stretch-dominated
+E5,GeneticAlgorithm,LC1,0.9971142399554744,0.002885760044525462,Stretch-dominated
+E5,Honeycomb,LC1,0.003960749813944434,0.9960392501860555,Bending-dominated
+E5,Voronoi,LC1,0.13987462097453374,0.8601253790254664,Intermediate/Bending
+E5,RemodelingPruning,LC2,0.953876256317275,0.04612374368272506,Stretch-dominated
+E5,GeneticAlgorithm,LC2,0.9965365818655173,0.003463418134482744,Stretch-dominated
+E5,Honeycomb,LC2,0.0013514349731066648,0.9986485650268934,Bending-dominated
+E5,Voronoi,LC2,0.08404489261949985,0.9159551073805001,Intermediate/Bending
+E5,RemodelingPruning,LC3,0.996643208471045,0.003356791528954914,Stretch-dominated
+E5,GeneticAlgorithm,LC3,0.9981959592008166,0.0018040407991833601,Stretch-dominated
+E5,Honeycomb,LC3,0.0014627846409737202,0.9985372153590263,Bending-dominated
+E5,Voronoi,LC3,0.20427660227555414,0.7957233977244458,Intermediate/Bending

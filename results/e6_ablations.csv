@@ -1,0 +1,9 @@
+experiment,ablation_group,parameter_name,parameter_value,compliance_J,stiffness_N_m,fe_solves,runtime_s,active_members
+E6,Pruning_Removal_Rate,removal_rate,0.02,0.003906220357962436,256.00194263531523,42,1.0316307544708252,81
+E6,Pruning_Removal_Rate,removal_rate,0.05,0.0037768635420771164,264.7699576273391,19,0.3703312873840332,81
+E6,Pruning_Removal_Rate,removal_rate,0.1,0.006606327416413261,151.37003314663517,11,0.2251884937286377,78
+E6,Pruning_Utilization_Metric,utilization_metric,strain_energy_density,0.0037768635420771164,264.7699576273391,19,0.4218015670776367,81
+E6,Pruning_Utilization_Metric,utilization_metric,axial_stress,0.0032896215131335534,303.98633885618125,19,0.5237376689910889,81
+E6,Pruning_Utilization_Metric,utilization_metric,peak_stress,0.004714189487708294,212.12554196376385,19,0.4971444606781006,81
+E6,Pruning_Wolffs_Redistribution,redistribute_area,False,0.0037768635420771164,264.7699576273391,19,0.5060913562774658,81
+E6,Pruning_Wolffs_Redistribution,redistribute_area,True,0.0015866289359751917,630.2670884956278,25,0.5797934532165527,60

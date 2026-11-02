@@ -1,0 +1,48 @@
+# Phase 1 FE Solver Validation Configuration
+# All parameters are reproducible and explicit.
+
+seed: 42
+
+material:
+  E: 2.1e11       # Young's modulus (Pa, 210 GPa steel-like)
+  density: 7850.0  # Mass density (kg/m^3)
+  name: "StructuralSteel"
+
+section:
+  thickness: 0.02  # In-plane thickness t (m)
+  depth: 1.0       # Out-of-plane depth b (m)
+
+tolerances:
+  relative: 1.0e-6
+  rigid_body_zero: 1.0e-10
+
+test_cases:
+  axial_bar:
+    length: 2.5           # m
+    axial_load: 10000.0   # N (tension)
+
+  cantilever:
+    length: 3.0           # m
+    tip_load: -500.0      # N (downward transverse)
+
+  simply_supported:
+    length: 4.0           # m
+    center_load: -1200.0  # N (downward transverse at midpoint)
+
+  mesh_refinement:
+    length: 3.0           # m
+    tip_load: -500.0      # N
+    refinement_levels: [1, 2, 4, 8, 16, 32]
+
+  symmetric_frame:
+    width: 4.0            # m (span)
+    height: 3.0           # m (column height)
+    vertical_load: -2500.0 # N applied at midpoint of roof beam
+
+  equilibrium_multi_member:
+    span: 5.0             # m
+    height: 2.5           # m
+    load_fx: 1200.0       # N
+    load_fy: -3400.0      # N
+    load_moment: 500.0    # N*m
+

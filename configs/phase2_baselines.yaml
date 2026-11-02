@@ -1,0 +1,50 @@
+# Phase 2 Baseline Evaluation Configuration
+# Fully reproducible parameters across all three baselines and three load cases.
+
+seed: 42
+
+domain:
+  width: 3.0      # Domain width W (m, 3:1 aspect ratio)
+  height: 1.0     # Domain height H (m)
+  depth: 1.0      # Out-of-plane depth b (m)
+
+material:
+  E: 2.1e+11              # Young's modulus (Pa, 210 GPa)
+  density: 7850.0         # Density (kg/m^3)
+  yield_strength: 2.5e+08 # Yield strength (Pa, 250 MPa)
+  name: "StructuralSteel"
+
+pad_config:
+  thickness: 0.005              # Pad member thickness (m)
+  depth: 1.0                   # Pad out-of-plane depth (m)
+  attachment_tolerance: 1.0e-4  # Attachment distance tolerance (m)
+
+load_cases:
+  LC1:
+    name: "Cantilever (Right Mid-Height Tip Shear)"
+    type: "cantilever"
+    magnitude: 1000.0   # N
+  LC2:
+    name: "Simply Supported (Central Point Load Top Edge)"
+    type: "simply_supported"
+    magnitude: 1000.0   # N
+  LC3:
+    name: "Compression Block (Distributed Downward Load Top Edge)"
+    type: "compression_block"
+    magnitude: 1000.0   # N
+
+volume_fractions: [0.2, 0.3, 0.4]
+
+ground_structure:
+  nx: 13
+  ny: 5
+  radius: null  # Auto-computed to include diagonals and knight's moves
+
+honeycomb:
+  cell_size: 0.25  # Hexagonal cell wall length (m)
+
+voronoi:
+  num_seeds: 40
+  lloyd_iterations: 1
+  min_edge_length_factor: 0.05
+  num_seeds_eval: 20  # Evaluated over 20 random seeds (seeds 1 to 20)
