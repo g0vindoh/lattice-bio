@@ -68,3 +68,4 @@ class TestSTLExporter:
 
         assert count == n_facets
         assert b"Lattice-Bio" in header
+

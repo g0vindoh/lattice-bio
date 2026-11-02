@@ -191,3 +191,4 @@ def compute_wolff_alignment_metric(
         "wolff_alignment_discrepancy_deg": float(diff),
         "fractional_anisotropy": fabric_result.fractional_anisotropy,
     }
+

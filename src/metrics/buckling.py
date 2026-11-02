@@ -145,3 +145,4 @@ def evaluate_lattice_buckling(
         num_buckling_critical=num_crit,
         is_buckling_critical=(min_lambda < 1.0),
     )
+

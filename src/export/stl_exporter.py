@@ -179,3 +179,4 @@ def export_lattice_to_stl(
             f.write("endsolid lattice_bio_pruned\n")
 
     return total_facets
+

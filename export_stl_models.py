@@ -67,3 +67,4 @@ def export_all_paper_stl_models(out_dir: str = "stl"):
 
 if __name__ == "__main__":
     export_all_paper_stl_models()
+
