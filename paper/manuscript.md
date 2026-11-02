@@ -2,7 +2,7 @@
 
 **Authors:** Lattice-Bio Research Contributors  
 **Date:** November 2026  
-**Repository:** [https://github.com/lattice-bio/lattice-bio](https://github.com/lattice-bio/lattice-bio)  
+**Repository:** [https://github.com/g0vindoh/lattice-bio](https://github.com/g0vindoh/lattice-bio)  
 **Git Commit Hash:** `29d59fb`  
 **Artifact Archive:** Fully reproducible from seeds and configuration files via `reproduce_all.py`
 

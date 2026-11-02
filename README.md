@@ -28,7 +28,7 @@ The repository is 100% config-driven and deterministic. A single master CLI scri
 ### Installation
 Clone the repository and install dependencies:
 ```bash
-git clone https://github.com/lattice-bio/lattice-bio.git
+git clone https://github.com/g0vindoh/lattice-bio.git
 cd lattice-bio
 pip install -e .
 # Alternatively:
@@ -263,7 +263,7 @@ If you use this benchmark codebase or research findings in your work, please cit
   author  = {Lattice-Bio Research Contributors},
   journal = {arXiv preprint},
   year    = {2026},
-  url     = {https://github.com/lattice-bio/lattice-bio}
+  url     = {https://github.com/g0vindoh/lattice-bio}
 }
 ```
 
