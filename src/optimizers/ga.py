@@ -24,6 +24,7 @@ from ..metrics.metrics import (
     compute_stiffness,
     compute_member_peak_stress,
 )
+from ..metrics.buckling import evaluate_lattice_buckling
 
 
 class GeneticAlgorithmOptimizer(BaseOptimizer):
@@ -53,6 +54,8 @@ class GeneticAlgorithmOptimizer(BaseOptimizer):
         elite_count: int = 2,
         discrete_levels: Optional[List[float]] = None,
         seed: int = 42,
+        buckling_penalty_weight: float = 0.0,
+        yield_stress_limit: Optional[float] = None,
     ) -> None:
         super().__init__(
             ground_structure=ground_structure,
@@ -67,6 +70,8 @@ class GeneticAlgorithmOptimizer(BaseOptimizer):
         self.mutation_rate = float(mutation_rate)
         self.tournament_size = int(tournament_size)
         self.elite_count = int(elite_count)
+        self.buckling_penalty_weight = float(buckling_penalty_weight)
+        self.yield_stress_limit = float(yield_stress_limit) if yield_stress_limit is not None else None
 
         if discrete_levels is None:
             # Default discrete section levels (m)
@@ -146,7 +151,20 @@ class GeneticAlgorithmOptimizer(BaseOptimizer):
 
         if report.is_feasible and res is not None:
             c = compute_compliance(res)
-            fitness = 1.0 / max(1e-12, c)
+            penalty_factor = 1.0
+
+            if self.buckling_penalty_weight > 0.0:
+                blf_report = evaluate_lattice_buckling(res)
+                if blf_report.is_buckling_critical:
+                    # Penalize elastic compressive buckling instability
+                    penalty_factor += self.buckling_penalty_weight * (1.0 - blf_report.global_buckling_factor)
+
+            if self.yield_stress_limit is not None and self.yield_stress_limit > 0.0:
+                max_stress, _, _ = compute_member_peak_stress(res)
+                if max_stress > self.yield_stress_limit:
+                    penalty_factor += (max_stress / self.yield_stress_limit - 1.0)
+
+            fitness = 1.0 / (max(1e-12, c) * penalty_factor)
             return fitness, report, res
         else:
             # Heavy penalty for infeasible designs
@@ -231,6 +249,9 @@ class GeneticAlgorithmOptimizer(BaseOptimizer):
                 ax_share = gen_best_res.axial_energy_fraction
                 bend_share = gen_best_res.bending_energy_fraction
                 max_s, _, _ = compute_member_peak_stress(gen_best_res)
+                blf_data = evaluate_lattice_buckling(gen_best_res)
+                gl_blf = blf_data.global_buckling_factor
+                is_crit = blf_data.is_buckling_critical
             else:
                 c_best = float("inf")
                 k_best = 0.0
@@ -239,6 +260,8 @@ class GeneticAlgorithmOptimizer(BaseOptimizer):
                 ax_share = 0.0
                 bend_share = 0.0
                 max_s = 0.0
+                gl_blf = 0.0
+                is_crit = True
 
             step = OptimizationStep(
                 step_index=gen,
@@ -253,6 +276,8 @@ class GeneticAlgorithmOptimizer(BaseOptimizer):
                 active_mask=(gen_best_ind > 0),
                 thicknesses=self.discrete_levels[gen_best_ind],
                 max_stress=max_s,
+                global_buckling_factor=gl_blf,
+                is_buckling_critical=is_crit,
             )
             history.steps.append(step)
 

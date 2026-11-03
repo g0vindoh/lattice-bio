@@ -34,7 +34,6 @@ from ..metrics.metrics import (
 )
 from ..optimizers.pruning import RemodelingPruningOptimizer
 from ..optimizers.ga import GeneticAlgorithmOptimizer
-from ..experiments.baseline_runner import evaluate_single_design
 
 
 def _extract_frame_data(
@@ -345,6 +344,7 @@ def export_demo_dataset(
                 pop = new_pop
 
             # 3. Baselines: Regular Honeycomb, Voronoi, Uniform Ground Structure
+            from ..experiments.baseline_runner import evaluate_single_design
             hc_data = generate_honeycomb(domain, cell_size=0.35)
             _, m_hc, res_hc = evaluate_single_design("honeycomb", lc, domain, material, vf, hc_data)
             hc_frame = _extract_frame_data(m_hc, res_hc, 0, 1, domain)

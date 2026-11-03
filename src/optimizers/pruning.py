@@ -25,6 +25,7 @@ from ..metrics.metrics import (
     compute_stiffness,
     compute_member_peak_stress,
 )
+from ..metrics.buckling import evaluate_lattice_buckling, compute_euler_buckling_load
 
 
 class RemodelingPruningOptimizer(BaseOptimizer):
@@ -50,6 +51,10 @@ class RemodelingPruningOptimizer(BaseOptimizer):
         initial_thickness: float = 0.025,
         max_iterations: int = 100,
         seed: int = 42,
+        stochastic_noise: float = 0.0,
+        thickness_jitter: float = 0.0,
+        buckling_penalty_weight: float = 0.0,
+        yield_stress_limit: Optional[float] = None,
     ) -> None:
         super().__init__(
             ground_structure=ground_structure,
@@ -63,6 +68,11 @@ class RemodelingPruningOptimizer(BaseOptimizer):
         self.redistribute_area = bool(redistribute_area)
         self.initial_thickness = float(initial_thickness)
         self.max_iterations = int(max_iterations)
+        self.stochastic_noise = float(stochastic_noise)
+        self.thickness_jitter = float(thickness_jitter)
+        self.buckling_penalty_weight = float(buckling_penalty_weight)
+        self.yield_stress_limit = float(yield_stress_limit) if yield_stress_limit is not None else None
+        self.rng = np.random.RandomState(self.seed)
 
         valid_metrics = ("strain_energy_density", "strain_energy", "axial_stress", "peak_stress")
         if self.utilization_metric not in valid_metrics:
@@ -104,6 +114,32 @@ class RemodelingPruningOptimizer(BaseOptimizer):
                 sig_bend = 6.0 * m_max / max(1e-12, b * (t**2))
                 scores[i] = sig_ax + sig_bend
 
+        # Cellular mechanosensitivity log-normal stochastic perturbation
+        if self.stochastic_noise > 0.0:
+            noise = self.rng.normal(0.0, self.stochastic_noise, size=len(scores))
+            scores = scores * np.exp(noise)
+
+        # Micro-jitter for fair stochastic tie-breaking when noise is active or custom seed used
+        if self.stochastic_noise > 0.0:
+            tie_jitter = self.rng.uniform(-1e-12, 1e-12, size=len(scores))
+            scores = scores + tie_jitter
+
+        # Compressive Euler buckling protection: protect struts nearing critical buckling
+        if self.buckling_penalty_weight > 0.0:
+            for i, idx in enumerate(active_indices):
+                eid = idx + 1
+                forces = res.internal_forces[eid]
+                t = thicknesses[idx]
+                L = self.gs.member_lengths[idx]
+                b = self.domain.depth
+                if forces.axial_force < -1e-4:  # compressive strut
+                    I_val = (b * (t**3)) / 12.0
+                    p_cr = compute_euler_buckling_load(self.material.E, I_val, L)
+                    lambda_blf = p_cr / abs(forces.axial_force)
+                    if lambda_blf < 1.0:
+                        # Near-buckling member: protect from removal by scaling up its utilization
+                        scores[i] *= (1.0 + self.buckling_penalty_weight * (1.0 / max(0.01, lambda_blf)))
+
         return scores
 
     def optimize(self) -> OptimizationHistory:
@@ -119,6 +155,11 @@ class RemodelingPruningOptimizer(BaseOptimizer):
         # Ensure initial structure starts over budget (e.g. at least 1.5x target budget)
         t_over_budget = 1.5 * V_target / max(1e-12, b * L_total)
         t_start = max(self.initial_thickness, t_over_budget)
+
+        # Apply initial thickness jitter if configured
+        if self.thickness_jitter > 0.0:
+            jitter_factor = 1.0 + self.rng.uniform(-self.thickness_jitter, self.thickness_jitter)
+            t_start = max(1e-4, t_start * jitter_factor)
 
         active_mask = np.ones(num_members, dtype=bool)
         thicknesses = np.full(num_members, t_start, dtype=np.float64)
@@ -183,6 +224,7 @@ class RemodelingPruningOptimizer(BaseOptimizer):
             ax_share = res.axial_energy_fraction
             bend_share = res.bending_energy_fraction
             max_stress, _, _ = compute_member_peak_stress(res)
+            blf_res = evaluate_lattice_buckling(res)
 
             step = OptimizationStep(
                 step_index=iteration,
@@ -197,6 +239,8 @@ class RemodelingPruningOptimizer(BaseOptimizer):
                 active_mask=active_mask.copy(),
                 thicknesses=thicknesses.copy(),
                 max_stress=max_stress,
+                global_buckling_factor=blf_res.global_buckling_factor,
+                is_buckling_critical=blf_res.is_buckling_critical,
             )
             history.steps.append(step)
 

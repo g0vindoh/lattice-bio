@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software or cite this study in academic research, please cite it as below."
+authors:
+  - family-names: "Research Group"
+    given-names: "Antigravity Computational Mechanics & Biomechanics"
+title: "Bone Remodeling vs Evolution: A Controlled Comparison of Bio-Inspired Pruning and Genetic Algorithms for Lightweight 2D Lattice Design"
+version: 2.0.0
+date-released: 2026-11-03
+url: "https://github.com/g0vindoh/lattice-bio"
+repository-code: "https://github.com/g0vindoh/lattice-bio"
+license: MIT
+keywords:
+  - "topology optimization"
+  - "lattice design"
+  - "bio-inspired engineering"
+  - "bone remodeling"
+  - "trabecular bone"
+  - "genetic algorithms"
+  - "ground structure optimization"
+  - "finite element analysis"
+  - "Euler-Bernoulli frame"
+  - "Euler buckling"
+  - "additive manufacturing"
+abstract: >-
+  This research study provides a controlled, mathematically rigorous comparison
+  between biological bone-remodeling-inspired cellular pruning, evolutionary
+  genetic algorithms, and classical topology optimization baselines (Dorn linear
+  programming ground structures, SIMP continuum topology optimization, and
+  simulated annealing) for lightweight 2D frame lattice structural design under
+  equal material volume budgets. Solved via a custom Euler-Bernoulli frame finite
+  element solver, the benchmark evaluates compliance, specific stiffness, Euler strut
+  buckling stability, and cross-load specialization mechanisms across multiple
+  loading spectra.

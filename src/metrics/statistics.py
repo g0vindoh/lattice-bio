@@ -59,6 +59,11 @@ class HypothesisTestResult:
     is_significant_nominal: bool  # p < 0.05
     adjusted_p_value: Optional[float] = None
     is_significant_corrected: Optional[bool] = None
+    median_difference: Optional[float] = None
+    ci_lower_diff: Optional[float] = None
+    ci_upper_diff: Optional[float] = None
+    statistical_power: Optional[float] = None
+    minimum_detectable_effect: Optional[float] = None
 
 
 def compute_distribution_summary(data: Sequence[float]) -> DistributionSummary:
@@ -119,6 +124,12 @@ def mann_whitney_u_test(
     rank_biserial = 1.0 - (2.0 * u_stat) / total_pairs
     a12 = u_stat / total_pairs
 
+    # Bootstrap 95% CI on median difference (Median_A - Median_B)
+    med_diff, ci_low, ci_high = bootstrap_median_difference_ci(a, b)
+
+    # Minimum detectable effect for this sample size pair
+    mde_dict = compute_minimum_detectable_effect(n1, n2)
+
     return HypothesisTestResult(
         method_a_name=name_a,
         method_b_name=name_b,
@@ -127,6 +138,10 @@ def mann_whitney_u_test(
         rank_biserial_r=rank_biserial,
         vargha_delaney_a12=a12,
         is_significant_nominal=bool(p_val < 0.05),
+        median_difference=med_diff,
+        ci_lower_diff=ci_low,
+        ci_upper_diff=ci_high,
+        minimum_detectable_effect=mde_dict["mde_rank_biserial"],
     )
 
 
@@ -199,8 +214,153 @@ def apply_holm_bonferroni_correction(
                 is_significant_nominal=orig.is_significant_nominal,
                 adjusted_p_value=float(adj_p),
                 is_significant_corrected=bool(adj_p < alpha),
+                median_difference=orig.median_difference,
+                ci_lower_diff=orig.ci_lower_diff,
+                ci_upper_diff=orig.ci_upper_diff,
+                statistical_power=orig.statistical_power,
+                minimum_detectable_effect=orig.minimum_detectable_effect,
             )
         )
 
     return final_results
+
+
+def bootstrap_median_ci(
+    data: Sequence[float],
+    num_bootstraps: int = 2000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> Tuple[float, float, float]:
+    """Compute bootstrap percentile confidence interval for the sample median.
+
+    Args:
+        data: 1D sequence of observations.
+        num_bootstraps: Number of bootstrap resamples (default 2000).
+        alpha: Significance level (default 0.05 for 95% CI).
+        seed: Random seed for exact reproducibility.
+
+    Returns:
+        (observed_median, ci_lower, ci_upper)
+    """
+    arr = np.asarray(data, dtype=np.float64)
+    if len(arr) == 0:
+        raise ValueError("Cannot bootstrap empty sample.")
+
+    observed_median = float(np.median(arr))
+    if len(arr) == 1:
+        return observed_median, observed_median, observed_median
+
+    rng = np.random.RandomState(seed)
+    n = len(arr)
+    # Generate bootstrap medians
+    indices = rng.randint(0, n, size=(num_bootstraps, n))
+    resamples = arr[indices]
+    boot_medians = np.median(resamples, axis=1)
+
+    low_pct = 100.0 * (alpha / 2.0)
+    high_pct = 100.0 * (1.0 - alpha / 2.0)
+    ci_lower = float(np.percentile(boot_medians, low_pct))
+    ci_upper = float(np.percentile(boot_medians, high_pct))
+
+    return observed_median, ci_lower, ci_upper
+
+
+def bootstrap_median_difference_ci(
+    sample_a: Sequence[float],
+    sample_b: Sequence[float],
+    num_bootstraps: int = 2000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> Tuple[float, float, float]:
+    """Compute bootstrap percentile confidence interval for difference in medians (Median_A - Median_B).
+
+    Args:
+        sample_a: 1D sequence for first group.
+        sample_b: 1D sequence for second group.
+        num_bootstraps: Number of resamples (default 2000).
+        alpha: Significance level (default 0.05 for 95% CI).
+        seed: Random seed for exact reproducibility.
+
+    Returns:
+        (observed_diff, ci_lower, ci_upper)
+    """
+    a = np.asarray(sample_a, dtype=np.float64)
+    b = np.asarray(sample_b, dtype=np.float64)
+    if len(a) == 0 or len(b) == 0:
+        raise ValueError("Samples must be non-empty.")
+
+    observed_diff = float(np.median(a) - np.median(b))
+
+    rng = np.random.RandomState(seed)
+    n1, n2 = len(a), len(b)
+    idx1 = rng.randint(0, n1, size=(num_bootstraps, n1))
+    idx2 = rng.randint(0, n2, size=(num_bootstraps, n2))
+
+    med_a = np.median(a[idx1], axis=1)
+    med_b = np.median(b[idx2], axis=1)
+    boot_diffs = med_a - med_b
+
+    low_pct = 100.0 * (alpha / 2.0)
+    high_pct = 100.0 * (1.0 - alpha / 2.0)
+    ci_lower = float(np.percentile(boot_diffs, low_pct))
+    ci_upper = float(np.percentile(boot_diffs, high_pct))
+
+    return observed_diff, ci_lower, ci_upper
+
+
+def compute_minimum_detectable_effect(
+    n1: int,
+    n2: int,
+    alpha: float = 0.05,
+    target_power: float = 0.80,
+) -> Dict[str, float]:
+    """Compute the Minimum Detectable Effect (MDE) and power parameters for two-sample comparisons.
+
+    Uses the asymptotic variance formula for the Mann-Whitney U / Vargha-Delaney statistic
+    under the null hypothesis:
+        Var(A12) = (n1 + n2 + 1) / (12 * n1 * n2)
+
+    Args:
+        n1: Sample size of group 1.
+        n2: Sample size of group 2.
+        alpha: Type I error rate (default 0.05, two-tailed).
+        target_power: Desired statistical power (1 - beta, default 0.80).
+
+    Returns:
+        Dictionary with mde_a12, mde_rank_biserial, mde_cohens_d, and effective_sample_size.
+    """
+    if n1 <= 1 or n2 <= 1:
+        return {
+            "mde_a12": 0.5,
+            "mde_rank_biserial": 1.0,
+            "mde_cohens_d": float("inf"),
+            "effective_sample_size": 0.0,
+        }
+
+    # Standard normal quantiles
+    z_alpha = stats.norm.ppf(1.0 - alpha / 2.0)
+    z_beta = stats.norm.ppf(target_power)
+
+    # Variance of A12 under H0
+    var_a12 = (n1 + n2 + 1.0) / (12.0 * n1 * n2)
+    se_a12 = np.sqrt(var_a12)
+
+    # Minimum detectable deviation |A12 - 0.5|
+    delta_a12 = (z_alpha + z_beta) * se_a12
+    mde_a12 = min(0.5, float(delta_a12))
+
+    # Rank-biserial r = 2 * A12 - 1 => delta_r = 2 * delta_a12
+    mde_r = min(1.0, float(2.0 * delta_a12))
+
+    # Equivalent Cohen's d: d = (z_alpha + z_beta) / sqrt(n_eff)
+    n_eff = (n1 * n2) / (n1 + n2)
+    mde_d = float((z_alpha + z_beta) / np.sqrt(n_eff))
+
+    return {
+        "mde_a12": mde_a12,
+        "mde_rank_biserial": mde_r,
+        "mde_cohens_d": mde_d,
+        "effective_sample_size": float(n_eff),
+    }
+
 

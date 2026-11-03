@@ -20,6 +20,9 @@ from .statistics import (
     compute_distribution_summary,
     mann_whitney_u_test,
     apply_holm_bonferroni_correction,
+    bootstrap_median_ci,
+    bootstrap_median_difference_ci,
+    compute_minimum_detectable_effect,
 )
 from .buckling import (
     BucklingAnalysisResult,

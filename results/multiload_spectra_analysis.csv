@@ -1,0 +1,22 @@
+model_name,is_multiload,evaluated_on,is_feasible,has_mechanism,condition_number_kappa,raw_compliance_J,bounded_compliance_J,raw_stiffness_N_m,bounded_stiffness_N_m,diagnosis_notes
+Single_LC1_Optimized,False,LC1,True,True,inf,0.0025781356897945098,0.0025781356897945098,387.87717960636314,387.87717960636314,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC1_Optimized,False,LC2,True,True,inf,16.083042951042316,16.083042951042316,0.062177288405189,0.062177288405189,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC1_Optimized,False,LC3,True,True,inf,0.014294502328217015,0.014294502328217015,69.95696506523514,69.95696506523514,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC2_Optimized,False,LC1,True,True,inf,0.00941933757858663,0.00941933757858663,106.16457809871274,106.16457809871274,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC2_Optimized,False,LC2,True,True,inf,0.00026984685300549064,0.00026984685300549064,3705.8056777844013,3705.8056777844013,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC2_Optimized,False,LC3,True,True,inf,0.028381252059759048,0.028381252059759048,35.23452728210927,35.23452728210927,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC3_Optimized,False,LC1,True,True,inf,2.3391484309287307,2.3391484309287307,0.4275060046544212,0.4275060046544212,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC3_Optimized,False,LC2,True,True,inf,0.0010951387398280912,0.0010951387398280912,913.126313253218,913.126313253218,Near-Singular Kinematic Mechanism / Loose Support Node
+Single_LC3_Optimized,False,LC3,True,True,inf,1.1425444913162935e-05,1.1425444913162935e-05,87523.94393394064,87523.94393394064,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_A_Equal_Triaxial,True,LC1,True,True,inf,0.0029935811694544656,0.0029935811694544656,334.04806597652225,334.04806597652225,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_A_Equal_Triaxial,True,LC2,True,True,inf,0.000411681590012534,0.000411681590012534,2429.061741550197,2429.061741550197,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_A_Equal_Triaxial,True,LC3,True,True,inf,0.014232461294623602,0.014232461294623602,70.26191600308486,70.26191600308486,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_B_Bending_Dominant,True,LC1,True,True,inf,0.0027552543737500708,0.0027552543737500708,362.94289541003013,362.94289541003013,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_B_Bending_Dominant,True,LC2,True,True,inf,0.0003826426881530492,0.0003826426881530492,2613.4041782604786,2613.4041782604786,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_B_Bending_Dominant,True,LC3,True,True,inf,0.015550861752420549,0.015550861752420549,64.30511800057295,64.30511800057295,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_C_Compression_Dominant,True,LC1,True,True,inf,0.0027906510572224845,0.0027906510572224845,358.33931921079846,358.33931921079846,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_C_Compression_Dominant,True,LC2,True,True,inf,0.0003655263257200372,0.0003655263257200372,2735.7810631837147,2735.7810631837147,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_C_Compression_Dominant,True,LC3,True,True,inf,8.278438238501216e-05,8.278438238501216e-05,12079.573117417454,12079.573117417454,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_D_Envelope_Max,True,LC1,True,True,inf,0.0029000333918500305,0.0029000333918500305,344.8236157591502,344.8236157591502,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_D_Envelope_Max,True,LC2,True,True,inf,0.0003763114464363379,0.0003763114464363379,2657.373325924525,2657.373325924525,Near-Singular Kinematic Mechanism / Loose Support Node
+MultiLoad_Spectrum_D_Envelope_Max,True,LC3,True,True,inf,0.014287206610543012,0.014287206610543012,69.99268837213191,69.99268837213191,Near-Singular Kinematic Mechanism / Loose Support Node

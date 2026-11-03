@@ -525,8 +525,217 @@ def plot_fig8_scaling(
     print(f"Generated Paper Figure 8: {out_path}")
 
 
+def plot_fig9_baselines_optimality_gap(
+    csv_path: str = "results/baselines_comparison.csv",
+    out_path: str = "figures/paper_fig9_baselines_optimality_gap.png",
+) -> None:
+    """Plot Fig 9: Optimality gap vs provably convex global LP truss optimum."""
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+
+    # Panel A: Compliance across methods in LC1 Cantilever
+    df_lc1 = df[df["load_case"] == "LC1"].copy()
+    methods = df_lc1["method"].tolist()
+    comps = df_lc1["compliance_J"].tolist()
+    colors = [
+        "#000000" if "LP" in m else ("#2b5c8f" if "Pruning" in m else ("#d95f02" if "Genetic" in m else ("#e7298a" if "Simulated" in m else "#7570b3")))
+        for m in methods
+    ]
+
+    y_pos = np.arange(len(methods))
+    ax1.barh(y_pos, comps, color=colors, alpha=0.85, edgecolor="black")
+    ax1.set_yticks(y_pos)
+    ax1.set_yticklabels([m.replace("_", " ") for m in methods], fontsize=8.5)
+    ax1.invert_yaxis()
+    ax1.set_xlabel("Compliance C (J) [Lower is Stiffer]", fontweight="bold")
+    ax1.set_title("(a) LC1 Cantilever Compliance Comparison", fontweight="bold")
+    ax1.grid(True, linestyle=":", alpha=0.5, axis="x")
+
+    # Panel B: Optimality Gap vs LP Ground Structure (%)
+    gaps = df_lc1["optimality_gap_percent"].fillna(0).tolist()
+    ax2.barh(y_pos, gaps, color=colors, alpha=0.85, edgecolor="black")
+    ax2.set_yticks(y_pos)
+    ax2.set_yticklabels([m.replace("_", " ") for m in methods], fontsize=8.5)
+    ax2.invert_yaxis()
+    ax2.set_xlabel("Optimality Gap vs Global LP Optimum (%)", fontweight="bold")
+    ax2.set_title("(b) Theoretical Optimality Gap", fontweight="bold")
+    ax2.grid(True, linestyle=":", alpha=0.5, axis="x")
+
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path)
+    plt.close(fig)
+    print(f"Generated Paper Figure 9: {out_path}")
+
+
+def plot_fig10_buckling_pareto(
+    csv_path: str = "results/buckling_pareto.csv",
+    out_path: str = "figures/paper_fig10_buckling_pareto.png",
+) -> None:
+    """Plot Fig 10: Compliance vs global buckling load factor (BLF) Pareto frontiers."""
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path)
+
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    df_lc1 = df[df["load_case"] == "LC1"]
+
+    prun = df_lc1[df_lc1["method"] == "RemodelingPruning"]
+    ga = df_lc1[df_lc1["method"] == "GeneticAlgorithm"]
+
+    if len(prun) > 0:
+        ax.plot(
+            prun["global_buckling_factor"],
+            prun["compliance_J"],
+            "o-",
+            color="#2b5c8f",
+            lw=2,
+            label="Remodeling Pruning (Varying Buckling Penalty)",
+        )
+    if len(ga) > 0:
+        ax.plot(
+            ga["global_buckling_factor"],
+            ga["compliance_J"],
+            "s--",
+            color="#d95f02",
+            lw=2,
+            label="Genetic Algorithm (Varying Buckling Penalty)",
+        )
+
+    ax.axvline(1.0, color="crimson", linestyle="--", lw=1.5, label="Euler Buckling Threshold (lambda = 1.0)")
+    ax.set_xlabel("Global Buckling Load Factor lambda_min (Euler Strut Stability)", fontweight="bold")
+    ax.set_ylabel("Compliance C (J)", fontweight="bold")
+    ax.set_title("Compliance vs Buckling Load Factor Pareto Frontier (LC1)", fontweight="bold")
+    ax.legend(loc="upper right", frameon=True)
+    ax.grid(True, linestyle=":", alpha=0.5)
+
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path)
+    plt.close(fig)
+    print(f"Generated Paper Figure 10: {out_path}")
+
+
+def plot_fig11_multiload_spectra(
+    csv_path: str = "results/multiload_spectra_analysis.csv",
+    out_path: str = "figures/paper_fig11_multiload_spectra.png",
+) -> None:
+    """Plot Fig 11: Condition number and cliff mechanism diagnosis."""
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+
+    # Evaluate on LC2 (where the single-cantilever specialization cliff occurs)
+    sub = df[df["evaluated_on"] == "LC2"].copy()
+    models = sub["model_name"].tolist()
+    conds = sub["condition_number_kappa"].clip(upper=1e16).tolist()
+    comps = sub["bounded_compliance_J"].tolist()
+
+    x = np.arange(len(models))
+    colors = ["#d95f02" if "Single" in m else "#2b5c8f" for m in models]
+
+    ax1.bar(x, np.log10(np.maximum(1.0, conds)), color=colors, alpha=0.85, edgecolor="black")
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([m.replace("_", "\n") for m in models], fontsize=7.5, rotation=35, ha="right")
+    ax1.set_ylabel("Log10 Condition Number log10(kappa(K))", fontweight="bold")
+    ax1.set_title("(a) Stiffness Matrix Conditioning under LC2", fontweight="bold")
+    ax1.grid(True, linestyle=":", alpha=0.5, axis="y")
+
+    ax2.bar(x, comps, color=colors, alpha=0.85, edgecolor="black")
+    ax2.set_xticks(x)
+    ax2.set_xticklabels([m.replace("_", "\n") for m in models], fontsize=7.5, rotation=35, ha="right")
+    ax2.set_ylabel("Bounded Compliance C (J)", fontweight="bold")
+    ax2.set_title("(b) Cross-Load Compliance under LC2", fontweight="bold")
+    ax2.grid(True, linestyle=":", alpha=0.5, axis="y")
+
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path)
+    plt.close(fig)
+    print(f"Generated Paper Figure 11: {out_path}")
+
+
+def plot_fig12_wolff_sweep(
+    csv_path: str = "results/wolff_sweep_summary.csv",
+    out_path: str = "figures/paper_fig12_wolff_sweep.png",
+) -> None:
+    """Plot Fig 12: Wolff's law area redistribution performance delta."""
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path)
+
+    fig, ax = plt.subplots(figsize=(7.5, 4.2))
+
+    lc_order = ["LC1", "LC2", "LC3"]
+    vfs = sorted(df["target_vf"].unique())
+    bar_width = 0.25
+    x = np.arange(len(lc_order))
+
+    for idx, vf in enumerate(vfs):
+        sub = df[df["target_vf"] == vf].set_index("load_case")
+        deltas = [sub.loc[lc]["compliance_delta_percent"] if lc in sub.index else 0.0 for lc in lc_order]
+        ax.bar(
+            x + (idx - 1) * bar_width,
+            deltas,
+            width=bar_width,
+            label=f"vf = {vf:.2f}",
+            alpha=0.85,
+            edgecolor="black",
+        )
+
+    ax.axhline(0.0, color="black", linestyle="-", lw=1)
+    ax.set_xticks(x)
+    ax.set_xticklabels(["LC1 (Cantilever)", "LC2 (Simply Supported)", "LC3 (Compression Block)"], fontweight="bold")
+    ax.set_ylabel("Stiffness Improvement from Wolff's Law (%)", fontweight="bold")
+    ax.set_title("Impact of Wolff's Law Area Redistribution Across Load Regimes", fontweight="bold")
+    ax.legend(frameon=True)
+    ax.grid(True, linestyle=":", alpha=0.5, axis="y")
+
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path)
+    plt.close(fig)
+    print(f"Generated Paper Figure 12: {out_path}")
+
+
+def plot_fig13_grid_scaling(
+    csv_path: str = "results/grid_scaling_study.csv",
+    out_path: str = "figures/paper_fig13_grid_scaling.png",
+) -> None:
+    """Plot Fig 13: Grid resolution scaling and topological convergence."""
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path)
+    df_res = df[df["study_type"] == "Grid_Resolution_Sweep"].sort_values("num_members")
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+
+    ax1.plot(df_res["num_members"], df_res["compliance_J"], "o-", color="#2b5c8f", lw=2, markersize=7)
+    ax1.set_xlabel("Candidate Ground Structure Members", fontweight="bold")
+    ax1.set_ylabel("Final Compliance C (J)", fontweight="bold")
+    ax1.set_title("(a) Asymptotic Compliance Convergence", fontweight="bold")
+    ax1.grid(True, linestyle=":", alpha=0.5)
+
+    ax2.plot(df_res["num_members"], df_res["optimization_time_s"], "s-", color="#d95f02", lw=2, markersize=7)
+    ax2.set_xlabel("Candidate Ground Structure Members", fontweight="bold")
+    ax2.set_ylabel("Total Pruning Optimization Runtime (s)", fontweight="bold")
+    ax2.set_title("(b) Computational Scaling up to 40x15 Grid", fontweight="bold")
+    ax2.grid(True, linestyle=":", alpha=0.5)
+
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path)
+    plt.close(fig)
+    print(f"Generated Paper Figure 13: {out_path}")
+
+
 def generate_all_paper_figures() -> None:
-    """Generate all publication paper figures (Fig 1 - Fig 8) from result CSVs."""
+    """Generate all publication paper figures (Fig 1 - Fig 13) from result CSVs."""
     plot_fig1_overview()
     plot_fig2_optimized_topologies()
     plot_fig3_convergence()
@@ -535,3 +744,8 @@ def generate_all_paper_figures() -> None:
     plot_fig6_kinematics()
     plot_fig7_robustness_matrix()
     plot_fig8_scaling()
+    plot_fig9_baselines_optimality_gap()
+    plot_fig10_buckling_pareto()
+    plot_fig11_multiload_spectra()
+    plot_fig12_wolff_sweep()
+    plot_fig13_grid_scaling()

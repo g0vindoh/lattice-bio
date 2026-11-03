@@ -46,6 +46,8 @@ class OptimizationStep:
     active_mask: np.ndarray
     thicknesses: np.ndarray
     max_stress: float = 0.0
+    global_buckling_factor: float = 0.0
+    is_buckling_critical: bool = False
 
 
 @dataclass
@@ -90,6 +92,8 @@ class OptimizationHistory:
                     "bending_energy_share": s.bending_energy_share,
                     "num_active_members": s.num_active_members,
                     "max_stress_Pa": s.max_stress,
+                    "global_buckling_factor": s.global_buckling_factor,
+                    "is_buckling_critical": s.is_buckling_critical,
                 }
             )
         return pd.DataFrame(rows)
